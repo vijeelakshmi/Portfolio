@@ -9,8 +9,19 @@
     href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- EmailJS for contact form (keep) -->
+  <!-- EmailJS -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- Environment configuration (replace with actual .env values during build) -->
+  <script>
+    // Use .env variables – replace these placeholders with your actual keys.
+    // For static sites, you can inject these via a build script or set them manually.
+    window.APP_ENV = {
+      // EmailJS public key (get from your EmailJS account)
+      EMAILJS_PUBLIC_KEY: 'yldz9ZOw0UnaLdyBq',   // ← replace with your key from .env
+      // Resume PDF file path (relative to project root)
+      RESUME_PDF_PATH: './pdf/Vijayalakshmi R Resume.pdf'
+    };
+  </script>
   <style>
     * {
       margin: 0;
@@ -766,7 +777,6 @@
             meaningful insights. My goal is to bridge the gap between robust web development and intelligent data
             solutions.</p>
           <br>
-          <!-- Resume button - will download the actual PDF file -->
           <a id="resumeBtn" class="btn btn-primary" style="display: inline-flex; cursor:pointer;"><i class="fas fa-download"></i>
             Resume (PDF)</a>
         </div>
@@ -960,22 +970,21 @@
     document.getElementById('viewProjectsBtn').addEventListener('click', () => document.getElementById('projects').scrollIntoView({ behavior: 'smooth' }));
     document.getElementById('contactScrollBtn').addEventListener('click', () => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' }));
 
-    // Contact form emailjs
-    emailjs.init("yldz9ZOw0UnaLdyBq");
+    // Contact form with environment variable for EmailJS
+    const emailjsKey = window.APP_ENV?.EMAILJS_PUBLIC_KEY || 'yldz9ZOw0UnaLdyBq';
+    emailjs.init(emailjsKey);
     const contactForm = document.getElementById("contactForm");
     contactForm.addEventListener("submit", function (e) { e.preventDefault(); emailjs.sendForm("service_0986tjv", "template_yub57zn", this).then(() => { alert("✅ Message sent successfully!"); contactForm.reset(); }).catch((error) => { console.log(error); alert("❌ Failed to send message. Please try again or contact directly via email."); }); });
 
-    // ---------- STATIC RESUME DOWNLOAD (actual PDF file) ----------
+    // Resume download using environment path (or fallback)
     const resumeButton = document.getElementById('resumeBtn');
     if (resumeButton) {
       resumeButton.addEventListener('click', function(e) {
         e.preventDefault();
-        // Path to the real PDF file (located in root directory)
-        const pdfUrl = './pdf/Vijayalakshmi R Resume.pdf';
-        // Create a temporary anchor to force download
+        const pdfPath = window.APP_ENV?.RESUME_PDF_PATH || './pdf/Vijayalakshmi R Resume.pdf';
         const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = 'Vijayalakshmi_R_Resume.pdf';   
+        link.href = pdfPath;
+        link.download = 'Vijayalakshmi_R_Resume.pdf';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
