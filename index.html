@@ -9,6 +9,7 @@
     href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- EmailJS for contact form (keep) -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     * {
@@ -755,7 +756,7 @@
       <h2>About Me</h2>
       <div class="about-grid">
         <div class="about-img">
-          <img src="images/vijaya.jpg" alt="Vijayalakshmi Profile" class="profile-pic">
+          <img src="images/vijaya.jpg" alt="Vijayalakshmi Profile" class="profile-pic" onerror="this.src='https://via.placeholder.com/280?text=Vijayalakshmi'">
         </div>
         <div class="about-text">
           <p>I'm Vijayalakshmi R, a passionate developer specializing in <strong>MERN Stack, Python, Data Analysis,
@@ -765,8 +766,9 @@
             meaningful insights. My goal is to bridge the gap between robust web development and intelligent data
             solutions.</p>
           <br>
-          <a id="resumeBtn" class="btn btn-primary" style="display: inline-flex;"><i class="fas fa-download"></i>
-            Resume</a>
+          <!-- Resume button - will download the actual PDF file -->
+          <a id="resumeBtn" class="btn btn-primary" style="display: inline-flex; cursor:pointer;"><i class="fas fa-download"></i>
+            Resume (PDF)</a>
         </div>
       </div>
     </div>
@@ -786,7 +788,7 @@
         <div class="proficiency-item"><div class="proficiency-label"><span>MERN Stack</span><span class="proficiency-number">5.5 / 6.0</span></div><div class="proficiency-bar-bg"><div class="proficiency-bar" data-width="91.6"></div></div></div>
         <div class="proficiency-item"><div class="proficiency-label"><span>Python & Data Analysis</span><span class="proficiency-number">5.0 / 6.0</span></div><div class="proficiency-bar-bg"><div class="proficiency-bar" data-width="83.3"></div></div></div>
         <div class="proficiency-item"><div class="proficiency-label"><span>AI / Machine Learning</span><span class="proficiency-number">4.5 / 6.0</span></div><div class="proficiency-bar-bg"><div class="proficiency-bar" data-width="75.0"></div></div></div>
-        <div class="proficiency-item"><div class="proficiency-label"><span>Data Visualization (Tableau/Power BI)</span><span class="proficiency-number">4.8 / 6.0</span></div><div class="proficiency-bar-bg"><div class="proficiency-bar" data-width="80.0"></div></div></div>
+        <div class="proficiency-item"><div class="proficiency-label"><span>Data Visualization</span><span class="proficiency-number">4.8 / 6.0</span></div><div class="proficiency-bar-bg"><div class="proficiency-bar" data-width="80.0"></div></div></div>
         <div class="proficiency-item"><div class="proficiency-label"><span>AWS Basics</span><span class="proficiency-number">3.5 / 6.0</span></div><div class="proficiency-bar-bg"><div class="proficiency-bar" data-width="58.3"></div></div></div>
         <div class="proficiency-item"><div class="proficiency-label"><span>DevOps (CI/CD, Docker)</span><span class="proficiency-number">3.2 / 6.0</span></div><div class="proficiency-bar-bg"><div class="proficiency-bar" data-width="53.3"></div></div></div>
         <div class="proficiency-item"><div class="proficiency-label"><span>UI/UX Design</span><span class="proficiency-number">4.0 / 6.0</span></div><div class="proficiency-bar-bg"><div class="proficiency-bar" data-width="66.7"></div></div></div>
@@ -841,6 +843,7 @@
   <div class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></div>
 
   <script>
+    // ------------------- DATA ----------------------
     const skillsList = [
       { name: "MongoDB", icon: "fas fa-database" }, { name: "Express.js", icon: "fab fa-node-js" },
       { name: "React", icon: "fab fa-react" }, { name: "Node.js", icon: "fab fa-node" },
@@ -875,9 +878,11 @@
       { title: "B.Sc. @ Jyoti Nivas College", period: "2020 - 2023", desc: "Specialized in Physics, Maths and Computer." }
     ];
 
+    // Render skills
     const skillsGrid = document.getElementById('skillsGrid');
     skillsList.forEach(s => { const div = document.createElement('div'); div.className = 'skill-card'; div.innerHTML = `<i class="${s.icon}"></i> <span>${s.name}</span>`; skillsGrid.appendChild(div); });
 
+    // Projects & filters
     const projectsGrid = document.getElementById('projectsGrid');
     const filterContainer = document.getElementById('filterContainer');
     let currentFilter = "All";
@@ -902,7 +907,7 @@
       filtered.forEach(proj => {
         const card = document.createElement('div');
         card.className = 'project-card';
-        let imageHtml = proj.image ? `<img src="${proj.image}" alt="${proj.title}">` : `<i class="${proj.icon || 'fas fa-code'}"></i>`;
+        let imageHtml = proj.image ? `<img src="${proj.image}" alt="${proj.title}" onerror="this.src='https://via.placeholder.com/400x220?text=${proj.title}'">` : `<i class="fas fa-code"></i>`;
         card.innerHTML = `<div class="project-image">${imageHtml}</div><div class="project-content"><div class="project-badge">${proj.category}</div><h3>${proj.title}</h3><p>${proj.desc}</p><div class="tech-stack">${proj.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}</div><div class="card-buttons"><button class="btn btn-outline btn-sm live-btn" data-url="${proj.live}"><i class="fas fa-external-link-alt"></i> View Project</button><button class="btn btn-outline btn-sm github-btn" data-url="${proj.github}"><i class="fab fa-github"></i> GitHub</button></div></div>`;
         projectsGrid.appendChild(card);
       });
@@ -910,15 +915,18 @@
       document.querySelectorAll('.github-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); window.open(btn.dataset.url, '_blank'); }));
     }
 
+    // Timeline
     const timelineContainer = document.getElementById('timelineContainer');
     timelineData.forEach(item => { const div = document.createElement('div'); div.className = 'timeline-item'; div.innerHTML = `<div class="timeline-dot"></div><div class="timeline-content"><h3>${item.title}</h3><p style="color: var(--accent);">${item.period}</p><p>${item.desc}</p></div>`; timelineContainer.appendChild(div); });
 
+    // Typing animation
     const roles = ["MERN Stack Developer 🚀", "Python & AI/ML Engineer 🤖", "Data Analyst 📊", "AWS & DevOps Enthusiast ☁️", "UI/UX Designer 🎨", "Linux User 🐧"];
     let roleIndex = 0, charIndex = 0;
     const typedEl = document.getElementById('typed-text');
     function typeEffect() { if (charIndex <= roles[roleIndex].length) { typedEl.textContent = roles[roleIndex].substring(0, charIndex); charIndex++; setTimeout(typeEffect, 90); } else { setTimeout(() => { charIndex = 0; roleIndex = (roleIndex + 1) % roles.length; typeEffect(); }, 2000); } }
     typeEffect();
 
+    // Particles
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -929,15 +937,18 @@
     function drawParticles() { if (!ctx) return; ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fillStyle = p.color; ctx.fill(); p.x += p.vx; p.y += p.vy; if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0; if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0; }); requestAnimationFrame(drawParticles); }
     drawParticles();
 
+    // Proficiency bars observer
     const proficiencyBars = document.querySelectorAll('.proficiency-bar');
     const proficiencyObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { const bar = entry.target; const width = bar.getAttribute('data-width'); bar.style.width = width + '%'; proficiencyObserver.unobserve(bar); } }); }, { threshold: 0.2 });
     proficiencyBars.forEach(bar => proficiencyObserver.observe(bar));
 
+    // Dark mode
     const toggleBtn = document.getElementById('darkModeToggle');
     const isDark = localStorage.getItem('theme') === 'dark';
     if (isDark) document.body.classList.add('dark');
     toggleBtn.addEventListener('click', () => { document.body.classList.toggle('dark'); localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light'); });
 
+    // Navigation
     const navLinks = document.querySelectorAll('.nav-link');
     const sections = document.querySelectorAll('section');
     const hamburger = document.getElementById('hamburger');
@@ -948,12 +959,30 @@
     document.getElementById('backToTop').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     document.getElementById('viewProjectsBtn').addEventListener('click', () => document.getElementById('projects').scrollIntoView({ behavior: 'smooth' }));
     document.getElementById('contactScrollBtn').addEventListener('click', () => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' }));
-    document.getElementById('resumeBtn').addEventListener('click', () => alert("📄 Resume download simulation — detailed MERN, Python, Data Analysis, AI/ML, UI/UX, Linux, AWS & DevOps portfolio."));
 
+    // Contact form emailjs
     emailjs.init("yldz9ZOw0UnaLdyBq");
     const contactForm = document.getElementById("contactForm");
     contactForm.addEventListener("submit", function (e) { e.preventDefault(); emailjs.sendForm("service_0986tjv", "template_yub57zn", this).then(() => { alert("✅ Message sent successfully!"); contactForm.reset(); }).catch((error) => { console.log(error); alert("❌ Failed to send message. Please try again or contact directly via email."); }); });
 
+    // ---------- STATIC RESUME DOWNLOAD (actual PDF file) ----------
+    const resumeButton = document.getElementById('resumeBtn');
+    if (resumeButton) {
+      resumeButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        // Path to the real PDF file (located in root directory)
+        const pdfUrl = './pdf/Vijayalakshmi R Resume.pdf';
+        // Create a temporary anchor to force download
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = 'Vijayalakshmi_R_Resume.pdf';   
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    }
+
+    // fade-up observer
     const fadeElements = document.querySelectorAll('.about-grid, .skills-grid, .projects-grid, .timeline, .contact-info, .contact-form, .proficiency-section');
     const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1 });
     fadeElements.forEach(el => { el.classList.add('fade-up'); observer.observe(el); });
