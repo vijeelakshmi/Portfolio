@@ -11,17 +11,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <!-- EmailJS -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <!-- Environment configuration (replace with actual .env values during build) -->
-  <script>
-    // Use .env variables – replace these placeholders with your actual keys.
-    // For static sites, you can inject these via a build script or set them manually.
-    window.APP_ENV = {
-      // EmailJS public key (get from your EmailJS account)
-      EMAILJS_PUBLIC_KEY: 'yldz9ZOw0UnaLdyBq',   // ← replace with your key from .env
-      // Resume PDF file path (relative to project root)
-      RESUME_PDF_PATH: './pdf/Vijayalakshmi R Resume.pdf'
-    };
-  </script>
   <style>
     * {
       margin: 0;
@@ -137,9 +126,12 @@
       top: 0;
       z-index: 100;
       backdrop-filter: blur(16px);
-      background: rgba(var(--bg-primary-rgb), 0.75);
+      background: rgba(255, 255, 255, 0.75);
       border-bottom: 1px solid var(--border-light);
       padding: 0.8rem 0;
+    }
+    body.dark .navbar {
+      background: rgba(17, 21, 42, 0.75);
     }
 
     .nav-container {
@@ -379,11 +371,6 @@
       transition: width 1s ease;
     }
 
-    .proficiency-number {
-      color: var(--accent);
-      font-weight: 600;
-    }
-
     .filter-buttons {
       display: flex;
       gap: 1rem;
@@ -452,26 +439,25 @@
       transform: scale(1.05);
     }
 
+    .project-fallback {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-gradient);
+      color: white;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 1rem;
+    }
+
     .project-image i {
       font-size: 4rem;
       color: white;
       opacity: 0.9;
       z-index: 2;
-    }
-
-    .project-image::before {
-      content: '';
-      position: absolute;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-      animation: shimmer 3s infinite;
-      pointer-events: none;
-    }
-
-    @keyframes shimmer {
-      0% { transform: translate(-30%, -30%); }
-      100% { transform: translate(30%, 30%); }
     }
 
     .project-content {
@@ -853,6 +839,14 @@
   <div class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></div>
 
   <script>
+    // ======================== ENVIRONMENT VARIABLES ========================
+    // Change these values to match your .env setup
+    window.APP_ENV = {
+      EMAILJS_PUBLIC_KEY: 'yldz9ZOw0UnaLdyBq',   // Replace with your EmailJS public key
+      RESUME_PDF_PATH: './pdf/Vijayalakshmi R Resume.pdf'  // Path to your resume PDF
+    };
+    // ======================================================================
+
     // ------------------- DATA ----------------------
     const skillsList = [
       { name: "MongoDB", icon: "fas fa-database" }, { name: "Express.js", icon: "fab fa-node-js" },
@@ -892,7 +886,7 @@
     const skillsGrid = document.getElementById('skillsGrid');
     skillsList.forEach(s => { const div = document.createElement('div'); div.className = 'skill-card'; div.innerHTML = `<i class="${s.icon}"></i> <span>${s.name}</span>`; skillsGrid.appendChild(div); });
 
-    // Projects & filters
+    // Projects & filters with robust fallback (NO external network requests)
     const projectsGrid = document.getElementById('projectsGrid');
     const filterContainer = document.getElementById('filterContainer');
     let currentFilter = "All";
@@ -917,10 +911,46 @@
       filtered.forEach(proj => {
         const card = document.createElement('div');
         card.className = 'project-card';
-        let imageHtml = proj.image ? `<img src="${proj.image}" alt="${proj.title}" onerror="this.src='https://via.placeholder.com/400x220?text=${proj.title}'">` : `<i class="fas fa-code"></i>`;
-        card.innerHTML = `<div class="project-image">${imageHtml}</div><div class="project-content"><div class="project-badge">${proj.category}</div><h3>${proj.title}</h3><p>${proj.desc}</p><div class="tech-stack">${proj.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}</div><div class="card-buttons"><button class="btn btn-outline btn-sm live-btn" data-url="${proj.live}"><i class="fas fa-external-link-alt"></i> View Project</button><button class="btn btn-outline btn-sm github-btn" data-url="${proj.github}"><i class="fab fa-github"></i> GitHub</button></div></div>`;
+        
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'project-image';
+        
+        const img = document.createElement('img');
+        img.src = proj.image;
+        img.alt = proj.title;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        
+        // Fallback: if image fails to load, replace with a styled div (no network call)
+        img.onerror = function() {
+          const fallbackDiv = document.createElement('div');
+          fallbackDiv.className = 'project-fallback';
+          fallbackDiv.innerText = proj.title;
+          imageDiv.innerHTML = '';
+          imageDiv.appendChild(fallbackDiv);
+        };
+        
+        imageDiv.appendChild(img);
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'project-content';
+        contentDiv.innerHTML = `
+          <div class="project-badge">${proj.category}</div>
+          <h3>${proj.title}</h3>
+          <p>${proj.desc}</p>
+          <div class="tech-stack">${proj.tech.map(t => `<span class="tech-tag">${t}</span>`).join('')}</div>
+          <div class="card-buttons">
+            <button class="btn btn-outline btn-sm live-btn" data-url="${proj.live}"><i class="fas fa-external-link-alt"></i> View Project</button>
+            <button class="btn btn-outline btn-sm github-btn" data-url="${proj.github}"><i class="fab fa-github"></i> GitHub</button>
+          </div>
+        `;
+        
+        card.appendChild(imageDiv);
+        card.appendChild(contentDiv);
         projectsGrid.appendChild(card);
       });
+      
       document.querySelectorAll('.live-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); window.open(btn.dataset.url, '_blank'); }));
       document.querySelectorAll('.github-btn').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); window.open(btn.dataset.url, '_blank'); }));
     }
@@ -936,7 +966,7 @@
     function typeEffect() { if (charIndex <= roles[roleIndex].length) { typedEl.textContent = roles[roleIndex].substring(0, charIndex); charIndex++; setTimeout(typeEffect, 90); } else { setTimeout(() => { charIndex = 0; roleIndex = (roleIndex + 1) % roles.length; typeEffect(); }, 2000); } }
     typeEffect();
 
-    // Particles
+    // Particles background
     const canvas = document.getElementById('particle-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -970,18 +1000,17 @@
     document.getElementById('viewProjectsBtn').addEventListener('click', () => document.getElementById('projects').scrollIntoView({ behavior: 'smooth' }));
     document.getElementById('contactScrollBtn').addEventListener('click', () => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' }));
 
-    // Contact form with environment variable for EmailJS
-    const emailjsKey = window.APP_ENV?.EMAILJS_PUBLIC_KEY || 'yldz9ZOw0UnaLdyBq';
-    emailjs.init(emailjsKey);
+    // Contact form with environment variable
+    emailjs.init(window.APP_ENV.EMAILJS_PUBLIC_KEY);
     const contactForm = document.getElementById("contactForm");
     contactForm.addEventListener("submit", function (e) { e.preventDefault(); emailjs.sendForm("service_0986tjv", "template_yub57zn", this).then(() => { alert("✅ Message sent successfully!"); contactForm.reset(); }).catch((error) => { console.log(error); alert("❌ Failed to send message. Please try again or contact directly via email."); }); });
 
-    // Resume download using environment path (or fallback)
+    // Resume download using .env path
     const resumeButton = document.getElementById('resumeBtn');
     if (resumeButton) {
       resumeButton.addEventListener('click', function(e) {
         e.preventDefault();
-        const pdfPath = window.APP_ENV?.RESUME_PDF_PATH || './pdf/Vijayalakshmi R Resume.pdf';
+        const pdfPath = window.APP_ENV.RESUME_PDF_PATH;
         const link = document.createElement('a');
         link.href = pdfPath;
         link.download = 'Vijayalakshmi_R_Resume.pdf';
